@@ -59,3 +59,49 @@ def new_note():
         if conexao and conexao.is_connected():
             conexao.close()
 
+@notes_bp.route('/deletenote', methods=['DELETE'])
+def delete_note():
+    conexao = None
+    cursor = None
+    
+    try:
+        conexao = conectar_db()
+        cursor = conexao.cursor()
+       
+        cursor.execute(
+            """
+            DELETE FROM notes
+            WHERE id = ?
+        """,
+        (id,)
+       )
+         
+        conexao.commit()
+
+        return jsonify({
+        "message": "Nota excluída com sucesso!"
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Erro interno",
+            "detail": str(e)
+        }), 500
+    
+    finally:
+        if cursor:
+            cursor.close()
+        
+        if conexao and conexao.is_connected():
+            conexao.close()
+
+
+
+
+
+
+
+
+
+       
+
