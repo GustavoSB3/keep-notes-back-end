@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_cors import conectar_db
+from app.database import conectar_db
 
 notes_bp = Blueprint("notes_bp", __name__)
 
