@@ -59,24 +59,30 @@ def new_note():
         if conexao and conexao.is_connected():
             conexao.close()
 
-@notes_bp.route('/deletenote', methods=['DELETE'])
-def delete_note():
+@notes_bp.route('/notes/<int:note_id>', methods=['DELETE'])
+def delete_note(notes_id):
     conexao = None
     cursor = None
     
     try:
+    
         conexao = conectar_db()
         cursor = conexao.cursor()
        
         cursor.execute(
             """
             DELETE FROM notes
-            WHERE id = ?
+            WHERE id = %s
         """,
-        (id,)
+        (notes_id,)
        )
          
         conexao.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({
+            "message": "Note not found"
+        }), 404
 
         return jsonify({
         "message": "Nota excluída com sucesso!"
