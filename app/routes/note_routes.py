@@ -60,7 +60,7 @@ def new_note():
             conexao.close()
 
 @notes_bp.route('/notes/<int:note_id>', methods=['DELETE'])
-def delete_note(notes_id):
+def delete_notes(notes_id):
     conexao = None
     cursor = None
     
@@ -101,6 +101,60 @@ def delete_note(notes_id):
         if conexao and conexao.is_connected():
             conexao.close()
 
+@notes_bp.route('/notes/<int:note_id>', methods=['PUT'])
+def update_note(note_id):
+    conexao = None
+    cursor = None
+    
+    try:
+
+        request_data = request.get_json()
+        
+        titulo = request_data.get("titulo")
+        conteudo = request_data.get("conteudo")
+        cor = request_data.get("cor", "#FFFFFF")
+
+
+        conexao = conectar_db()
+        cursor = conexao.cursor()
+       
+        cursor.execute(
+            """
+            UPDATE notes
+            SET titulo = %s, conteudo = %s, cor = %s 
+            WHERE id = %s
+        """,
+        (titulo, conteudo, cor, note_id)
+       )
+         
+        conexao.commit()
+
+        if cursor.rowcount == 0:
+            return jsonify({
+            "message": "Note not found"
+        }), 404
+
+        return jsonify({
+        "message": "Nota atualizada com sucesso!"
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "message": "Erro interno",
+            "detail": str(e)
+        }), 500
+    
+    finally:
+        if cursor:
+            cursor.close()
+        
+        if conexao and conexao.is_connected():
+            conexao.close()
+
+
+
+
+  
 
 
 
