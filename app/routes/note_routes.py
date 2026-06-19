@@ -10,16 +10,16 @@ def new_note():
     cursor = None
 
     try:
-        data = request.get_json()
+        request_data = request.get_json()
 
-        title = data.get("title")
-        text = data.get("text")
-        color = data.get("color", "")
-        user_id = data.get("user_id")
-
-        if not text or not user_id:
+        titulo = request_data.get("titulo")
+        conteudo = request_data.get("conteudo")
+        cor = request_data.get("cor", "#FFFFFF")
+        usuario_id = request_data.get("usuario_id")
+        
+        if not conteudo or not usuario_id:
             return jsonify({
-                "message": "Text and ID are mandatory"
+                "message": "Content and ID are mandatory"
             }), 400
 
         conexao = conectar_db()
@@ -32,11 +32,11 @@ def new_note():
         cursor = conexao.cursor()
 
         sql = """
-            INSERT INTO notas (titulo, conteudo, cor, usuario_id)
+            INSERT INTO notes (titulo, conteudo, cor, usuario_id)
             VALUES (%s, %s, %s, %s)
         """
 
-        valores = (title, text, color, user_id)
+        valores = (titulo, conteudo, cor, usuario_id)
 
         cursor.execute(sql, valores)
         conexao.commit()
