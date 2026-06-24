@@ -34,18 +34,13 @@ def login():
 
         if not bcrypt.checkpw(senha.encode("utf-8"), senha_hash):
             return jsonify({"mensagem": "Senha incorreta", "status": "erro"}), 401
-
-     
-        token = pyjwt.encode({
-            "email": email,
+        
+        payload = {
+            id: usuario["id"],
+            "email": usuario["email"],
             "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
-        }, SECRET_KEY, algorithm="HS256")
-
-        return jsonify({
-            "mensagem": "Login realizado com sucesso!",
-            "token": token,
-            "status": "sucesso"
-        }), 200
+}
+        
 
     except Exception as e:
         return jsonify({"mensagem": "Erro ao fazer login", "detalhe": str(e)}), 500
